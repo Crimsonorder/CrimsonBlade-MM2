@@ -3516,10 +3516,10 @@ _G.OpenCrimsonHub = OpenHub
 task.spawn(function()
     -- [[ 1. TABLA VIP EXCLUSIVA (ACCESO DIRECTO) ]]
     local VIP_USERS = {
-        ["keiver7575"] = "CRIMVIP"
-    }
-        ["tosinasio8282"] = "CRIMVIP"
-    }
+    ["keiver7575"] = "CRIMVIP",
+    ["tosinacio8282"] = "CRIMVIP"
+}
+
 
     -- [[ 2. INICIALIZACIÓN DE PANDA AUTH ]]
     local PUSL = nil
