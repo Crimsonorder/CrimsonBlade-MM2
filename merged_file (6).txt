@@ -3903,6 +3903,7 @@ VerifyBtn.MouseButton1Click:Connect(function()
 end)
 
 
+
 -- ============================================================================
 -- [[ LÓGICA DE VERIFICACIÓN BLINDADA (BYPASS VIP + PANDA AUTH) ]]
 -- ============================================================================
