@@ -11,8 +11,8 @@ local VIP_KEY = "CRIMVIP" -- Contraseña secreta para ti y tus amigos VIP
 
 -- Agrega aquí los nombres de usuario autorizados (sin @):
 local VIP_USERS = {
-    "nanten762_te6r", -- Tu usuario
-    "tosinasio",      -- Tu amigo
+    "keiver7575", -- Tu usuario
+    "tosinasio8282",      -- Tu amigo
 }
 
 local SERVICE_ID = "crimsonblade"
