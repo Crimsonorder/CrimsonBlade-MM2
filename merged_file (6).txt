@@ -3813,7 +3813,7 @@ _G.OpenCrimsonHub = OpenHub
 -- [[ BOTÓN GET KEY ]]
 -- ============================================================================
 GetKeyBtn.MouseButton1Click:Connect(function()
-    local url = (PUSL and typeof(PUSL.getKeyUrl) == "function" and PUSL.getKeyUrl()) or "https://pandauth.com/getkey/crimsonblade"
+    local url = (PUSL and typeof(PUSL.getKeyUrl) == "function" and PUSL.getKeyUrl()) or "https://pandauth.com"
     
     if setclipboard then
         setclipboard(url)
@@ -3828,6 +3828,80 @@ GetKeyBtn.MouseButton1Click:Connect(function()
         StatusLabel.TextColor3 = Color3.fromRGB(240, 242, 248)
     end
 end)
+
+-- ============================================================================
+-- [[ LÓGICA DE VERIFICACIÓN BLINDADA (BYPASS VIP + PANDA AUTH) ]]
+-- ============================================================================
+local isVerifying = false
+VerifyBtn.MouseButton1Click:Connect(function()
+    if isVerifying then return end
+
+    local inputKey = KeyInputBox.Text:gsub("%s+", "")
+    
+    if #inputKey < 2 then
+        StatusLabel.Text = "Por favor ingresa una llave válida."
+        StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+        return
+    end
+
+    -- 1. EVALUACIÓN JERÁRQUICA: MASTER KEY VIP
+    if inputKey == "CRIMVIP" then
+        local isWhitelisted = false
+        for _, whitelistedUser in ipairs(VIP_WHITELIST) do
+            if string.lower(whitelistedUser) == string.lower(LocalPlayer.Name) then
+                isWhitelisted = true
+                break
+            end
+        end
+
+        if isWhitelisted then
+            isVerifying = true
+            StatusLabel.Text = "Master Key reconocida. Acceso concedido..."
+            StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 120)
+            task.wait(0.4)
+            KeyGui:Destroy()
+            if typeof(OpenHub) == "function" then
+                OpenHub()
+            end
+            return
+        else
+            StatusLabel.Text = "Clave VIP no autorizada para este usuario."
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+            return
+        end
+    end
+
+    -- 2. FLUJO REGULAR: VALIDACIÓN CON PANDA AUTH
+    isVerifying = true
+    StatusLabel.Text = "Verificando con Panda Auth..."
+    StatusLabel.TextColor3 = Color3.fromRGB(240, 242, 248)
+
+    task.spawn(function()
+        local valid = false
+        
+        if PUSL and typeof(PUSL.validate) == "function" then
+            local res = PUSL.validate(inputKey)
+            if res and (res.success == true or res.valid == true or res == true) then
+                valid = true
+            end
+        end
+
+        if valid then
+            StatusLabel.Text = "¡Autenticado! Desplegando suite..."
+            StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 120)
+            task.wait(0.5)
+            KeyGui:Destroy()
+            if typeof(OpenHub) == "function" then
+                OpenHub()
+            end
+        else
+            StatusLabel.Text = "Llave inválida o expirada. Reintenta."
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+            isVerifying = false
+        end
+    end)
+end)
+
 
 -- ============================================================================
 -- [[ LÓGICA DE VERIFICACIÓN BLINDADA (BYPASS VIP + PANDA AUTH) ]]
