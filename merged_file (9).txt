@@ -3473,260 +3473,262 @@ _G.OpenCrimsonHub = OpenHub
 -- [[ SISTEMA INTEGRADO DE KEY (PANDA AUTH + VIP EXCLUSIVO) ]]
 -- ============================================================================
 
--- [[ 1. TABLA VIP EXCLUSIVA (ACCESO DIRECTO) ]]
-local VIP_USERS = {
-    ["tosinacio8282"] = "CRIMVIP"
-}
+task.spawn(function()
+    -- [[ 1. TABLA VIP EXCLUSIVA (ACCESO DIRECTO) ]]
+    local VIP_USERS = {
+        ["tosinacio8282"] = "CRIMVIP"
+    }
 
--- [[ 2. INICIALIZACIÓN DE PANDA AUTH ]]
-local PUSL = nil
-pcall(function()
-    local src = game:HttpGet("https://secure.pandauth.com/pv4/lib")
-    if src then
-        PUSL = loadstring(src)()
-        if PUSL and typeof(PUSL.configure) == "function" then
-            PUSL.configure({
-                serviceId = "crimsonblade"
-            })
-        end
-    end
-end)
-
-local OLD_KEY = PARENT:FindFirstChild("CrimsonBladeKeySystem")
-if OLD_KEY then OLD_KEY:Destroy() end
-
-local KeyGui = Instance.new("ScreenGui")
-KeyGui.Name = "CrimsonBladeKeySystem"
-KeyGui.ResetOnSpawn = false
-KeyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-KeyGui.Parent = PARENT
-
--- Ventana de Cristal Translúcida
-local KeyFrame = Instance.new("Frame")
-KeyFrame.Name = "KeyFrame"
-KeyFrame.Size = UDim2.fromOffset(360, 215)
-KeyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-KeyFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-KeyFrame.BackgroundColor3 = Color3.fromRGB(12, 13, 18)
-KeyFrame.BackgroundTransparency = 0.35 -- Efecto cristal translúcido
-KeyFrame.BorderSizePixel = 0
-KeyFrame.Parent = KeyGui
-
-local FrameCorner = Instance.new("UICorner")
-FrameCorner.CornerRadius = UDim.new(0, 12)
-FrameCorner.Parent = KeyFrame
-
-local FrameStroke = Instance.new("UIStroke")
-FrameStroke.Thickness = 1.6
-FrameStroke.Color = Color3.fromRGB(255, 255, 255)
-FrameStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-FrameStroke.Parent = KeyFrame
-
-local FrameGradient = Instance.new("UIGradient")
-FrameGradient.Color = HubGradient.Color
-FrameGradient.Parent = FrameStroke
-table.insert(activeToggleGradients, FrameGradient)
-
-ApplyStandardDrag(KeyFrame, KeyFrame)
-
--- Título
-local HeaderTitle = Instance.new("TextLabel")
-HeaderTitle.Size = UDim2.new(1, -20, 0, 30)
-HeaderTitle.Position = UDim2.new(0, 14, 0, 8)
-HeaderTitle.BackgroundTransparency = 1
-HeaderTitle.Text = "CRIMSON<font color='#EE3C5A'>BLADE</font> <font color='#8A92A6' size='9'>KEY SYSTEM</font>"
-HeaderTitle.RichText = true
-HeaderTitle.TextColor3 = Color3.fromRGB(240, 242, 248)
-HeaderTitle.Font = Enum.Font.GothamBold
-HeaderTitle.TextSize = 13
-HeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
-HeaderTitle.Parent = KeyFrame
-
--- Subtítulo
-local SubLabel = Instance.new("TextLabel")
-SubLabel.Size = UDim2.new(1, -28, 0, 16)
-SubLabel.Position = UDim2.new(0, 14, 0, 42)
-SubLabel.BackgroundTransparency = 1
-SubLabel.Text = "Enter your Panda Auth key to access the hub."
-SubLabel.TextColor3 = Color3.fromRGB(150, 155, 170)
-SubLabel.Font = Enum.Font.Gotham
-SubLabel.TextSize = 10
-SubLabel.TextXAlignment = Enum.TextXAlignment.Left
-SubLabel.Parent = KeyFrame
-
--- Contenedor de Input Translúcido
-local InputCard = Instance.new("Frame")
-InputCard.Size = UDim2.new(1, -28, 0, 36)
-InputCard.Position = UDim2.new(0, 14, 0, 68)
-InputCard.BackgroundColor3 = Color3.fromRGB(18, 19, 25)
-InputCard.BackgroundTransparency = 0.45
-InputCard.BorderSizePixel = 0
-InputCard.Parent = KeyFrame
-
-local InputCorner = Instance.new("UICorner")
-InputCorner.CornerRadius = UDim.new(0, 8)
-InputCorner.Parent = InputCard
-
-local InputStroke = Instance.new("UIStroke")
-InputStroke.Thickness = 1.2
-InputStroke.Color = Color3.fromRGB(255, 255, 255)
-InputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-InputStroke.Parent = InputCard
-
-local InputGradient = Instance.new("UIGradient")
-InputGradient.Color = HubGradient.Color
-InputGradient.Parent = InputStroke
-table.insert(activeToggleGradients, InputGradient)
-
-local KeyInputBox = Instance.new("TextBox")
-KeyInputBox.Size = UDim2.new(1, -20, 1, 0)
-KeyInputBox.Position = UDim2.new(0, 10, 0, 0)
-KeyInputBox.BackgroundTransparency = 1
-KeyInputBox.PlaceholderText = "Paste License Key here..."
-KeyInputBox.PlaceholderColor3 = Color3.fromRGB(130, 135, 150)
-KeyInputBox.Text = ""
-KeyInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-KeyInputBox.Font = Enum.Font.GothamBold
-KeyInputBox.TextSize = 11
-KeyInputBox.TextXAlignment = Enum.TextXAlignment.Left
-KeyInputBox.ClearTextOnFocus = false
-KeyInputBox.Parent = InputCard
-
--- Texto de Estado
-local StatusLabel = Instance.new("TextLabel")
-StatusLabel.Size = UDim2.new(1, -28, 0, 16)
-StatusLabel.Position = UDim2.new(0, 14, 0, 112)
-StatusLabel.BackgroundTransparency = 1
-StatusLabel.Text = "Status: Waiting for key input..."
-StatusLabel.TextColor3 = Color3.fromRGB(140, 145, 160)
-StatusLabel.Font = Enum.Font.Gotham
-StatusLabel.TextSize = 10
-StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
-StatusLabel.Parent = KeyFrame
-
--- Botón Verificar
-local VerifyBtn = Instance.new("TextButton")
-VerifyBtn.Size = UDim2.new(0.5, -18, 0, 36)
-VerifyBtn.Position = UDim2.new(0, 14, 0, 138)
-VerifyBtn.BackgroundColor3 = Color3.fromRGB(25, 20, 24)
-VerifyBtn.BackgroundTransparency = 0.25
-VerifyBtn.Text = "Verify Key"
-VerifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-VerifyBtn.Font = Enum.Font.GothamBold
-VerifyBtn.TextSize = 11
-VerifyBtn.AutoButtonColor = false
-VerifyBtn.Parent = KeyFrame
-
-local VCorner = Instance.new("UICorner")
-VCorner.CornerRadius = UDim.new(0, 8)
-VCorner.Parent = VerifyBtn
-
-local VStroke = Instance.new("UIStroke")
-VStroke.Thickness = 1.4
-VStroke.Color = Color3.fromRGB(255, 255, 255)
-VStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-VStroke.Parent = VerifyBtn
-
-local VGradient = Instance.new("UIGradient")
-VGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 45, 75)),
-    ColorSequenceKeypoint.new(0.35, Color3.fromRGB(70, 10, 20)),
-    ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 100, 120)),
-    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(40, 5, 12)),
-    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 45, 75))
-})
-VGradient.Parent = VStroke
-table.insert(activeToggleGradients, VGradient)
-
--- Botón Obtener Llave
-local GetKeyBtn = Instance.new("TextButton")
-GetKeyBtn.Size = UDim2.new(0.5, -18, 0, 36)
-GetKeyBtn.Position = UDim2.new(0.5, 4, 0, 138)
-GetKeyBtn.BackgroundColor3 = Color3.fromRGB(20, 22, 28)
-GetKeyBtn.BackgroundTransparency = 0.35
-GetKeyBtn.Text = "Get Key URL"
-GetKeyBtn.TextColor3 = Color3.fromRGB(150, 155, 170)
-GetKeyBtn.Font = Enum.Font.GothamBold
-GetKeyBtn.TextSize = 11
-GetKeyBtn.AutoButtonColor = false
-GetKeyBtn.Parent = KeyFrame
-
-local GCorner = Instance.new("UICorner")
-GCorner.CornerRadius = UDim.new(0, 8)
-GCorner.Parent = GetKeyBtn
-
-local GStroke = Instance.new("UIStroke")
-GStroke.Thickness = 1
-GStroke.Color = Color3.fromRGB(40, 45, 55)
-GStroke.Parent = GetKeyBtn
-
--- Evento Botón Get Key URL
-GetKeyBtn.MouseButton1Click:Connect(function()
-    local url = (PUSL and typeof(PUSL.getKeyUrl) == "function" and PUSL.getKeyUrl()) or "https://pandauth.com/getkey/crimsonblade"
-    
-    if setclipboard then
-        setclipboard(url)
-        StatusLabel.Text = "URL copied to clipboard!"
-        StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 120)
-    elseif toclipboard then
-        toclipboard(url)
-        StatusLabel.Text = "URL copied to clipboard!"
-        StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 120)
-    else
-        StatusLabel.Text = "Link: " .. tostring(url)
-        StatusLabel.TextColor3 = Color3.fromRGB(240, 242, 248)
-    end
-end)
-
--- Evento Botón Verify Key
-local isVerifying = false
-VerifyBtn.MouseButton1Click:Connect(function()
-    if isVerifying then return end
-    
-    local inputKey = KeyInputBox.Text:gsub("%s+", "")
-    if #inputKey < 2 then
-        StatusLabel.Text = "Please enter a valid key."
-        StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
-        return
-    end
-
-    isVerifying = true
-    StatusLabel.Text = "Checking key authentication..."
-    StatusLabel.TextColor3 = Color3.fromRGB(240, 242, 248)
-
-    task.spawn(function()
-        local valid = false
-        local myUsername = string.lower(LocalPlayer.Name)
-        local cleanInputUpper = string.upper(inputKey)
-
-        -- 1. Comprobación VIP Creador (Sin petición web)
-        for user, vipKey in pairs(VIP_USERS) do
-            if string.lower(user) == myUsername and string.upper(vipKey) == cleanInputUpper then
-                valid = true
-                break
+    -- [[ 2. INICIALIZACIÓN DE PANDA AUTH ]]
+    local PUSL = nil
+    pcall(function()
+        local src = game:HttpGet("https://secure.pandauth.com/pv4/lib")
+        if src then
+            PUSL = loadstring(src)()
+            if PUSL and typeof(PUSL.configure) == "function" then
+                PUSL.configure({
+                    serviceId = "crimsonblade"
+                })
             end
         end
+    end)
 
-        -- 2. Comprobación con Panda Auth
-        if not valid and PUSL and typeof(PUSL.validate) == "function" then
-            local res = PUSL.validate(inputKey)
-            if res and (res.success == true or res.valid == true or res == true) then
-                valid = true
-            end
-        end
+    local OLD_KEY = PARENT:FindFirstChild("CrimsonBladeKeySystem")
+    if OLD_KEY then OLD_KEY:Destroy() end
 
-        -- 3. Concesión de Acceso
-        if valid then
-            StatusLabel.Text = "Authenticated! Opening Hub..."
+    local KeyGui = Instance.new("ScreenGui")
+    KeyGui.Name = "CrimsonBladeKeySystem"
+    KeyGui.ResetOnSpawn = false
+    KeyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    KeyGui.Parent = PARENT
+
+    -- Ventana de Cristal Translúcida
+    local KeyFrame = Instance.new("Frame")
+    KeyFrame.Name = "KeyFrame"
+    KeyFrame.Size = UDim2.fromOffset(360, 215)
+    KeyFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    KeyFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    KeyFrame.BackgroundColor3 = Color3.fromRGB(12, 13, 18)
+    KeyFrame.BackgroundTransparency = 0.35
+    KeyFrame.BorderSizePixel = 0
+    KeyFrame.Parent = KeyGui
+
+    local FrameCorner = Instance.new("UICorner")
+    FrameCorner.CornerRadius = UDim.new(0, 12)
+    FrameCorner.Parent = KeyFrame
+
+    local FrameStroke = Instance.new("UIStroke")
+    FrameStroke.Thickness = 1.6
+    FrameStroke.Color = Color3.fromRGB(255, 255, 255)
+    FrameStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    FrameStroke.Parent = KeyFrame
+
+    local FrameGradient = Instance.new("UIGradient")
+    FrameGradient.Color = HubGradient.Color
+    FrameGradient.Parent = FrameStroke
+    table.insert(activeToggleGradients, FrameGradient)
+
+    ApplyStandardDrag(KeyFrame, KeyFrame)
+
+    -- Título
+    local HeaderTitle = Instance.new("TextLabel")
+    HeaderTitle.Size = UDim2.new(1, -20, 0, 30)
+    HeaderTitle.Position = UDim2.new(0, 14, 0, 8)
+    HeaderTitle.BackgroundTransparency = 1
+    HeaderTitle.Text = "CRIMSON<font color='#EE3C5A'>BLADE</font> <font color='#8A92A6' size='9'>KEY SYSTEM</font>"
+    HeaderTitle.RichText = true
+    HeaderTitle.TextColor3 = Color3.fromRGB(240, 242, 248)
+    HeaderTitle.Font = Enum.Font.GothamBold
+    HeaderTitle.TextSize = 13
+    HeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
+    HeaderTitle.Parent = KeyFrame
+
+    -- Subtítulo
+    local SubLabel = Instance.new("TextLabel")
+    SubLabel.Size = UDim2.new(1, -28, 0, 16)
+    SubLabel.Position = UDim2.new(0, 14, 0, 42)
+    SubLabel.BackgroundTransparency = 1
+    SubLabel.Text = "Enter your Panda Auth key to access the hub."
+    SubLabel.TextColor3 = Color3.fromRGB(150, 155, 170)
+    SubLabel.Font = Enum.Font.Gotham
+    SubLabel.TextSize = 10
+    SubLabel.TextXAlignment = Enum.TextXAlignment.Left
+    SubLabel.Parent = KeyFrame
+
+    -- Contenedor de Input Translúcido
+    local InputCard = Instance.new("Frame")
+    InputCard.Size = UDim2.new(1, -28, 0, 36)
+    InputCard.Position = UDim2.new(0, 14, 0, 68)
+    InputCard.BackgroundColor3 = Color3.fromRGB(18, 19, 25)
+    InputCard.BackgroundTransparency = 0.45
+    InputCard.BorderSizePixel = 0
+    InputCard.Parent = KeyFrame
+
+    local InputCorner = Instance.new("UICorner")
+    InputCorner.CornerRadius = UDim.new(0, 8)
+    InputCorner.Parent = InputCard
+
+    local InputStroke = Instance.new("UIStroke")
+    InputStroke.Thickness = 1.2
+    InputStroke.Color = Color3.fromRGB(255, 255, 255)
+    InputStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    InputStroke.Parent = InputCard
+
+    local InputGradient = Instance.new("UIGradient")
+    InputGradient.Color = HubGradient.Color
+    InputGradient.Parent = InputStroke
+    table.insert(activeToggleGradients, InputGradient)
+
+    local KeyInputBox = Instance.new("TextBox")
+    KeyInputBox.Size = UDim2.new(1, -20, 1, 0)
+    KeyInputBox.Position = UDim2.new(0, 10, 0, 0)
+    KeyInputBox.BackgroundTransparency = 1
+    KeyInputBox.PlaceholderText = "Paste License Key here..."
+    KeyInputBox.PlaceholderColor3 = Color3.fromRGB(130, 135, 150)
+    KeyInputBox.Text = ""
+    KeyInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeyInputBox.Font = Enum.Font.GothamBold
+    KeyInputBox.TextSize = 11
+    KeyInputBox.TextXAlignment = Enum.TextXAlignment.Left
+    KeyInputBox.ClearTextOnFocus = false
+    KeyInputBox.Parent = InputCard
+
+    -- Texto de Estado
+    local StatusLabel = Instance.new("TextLabel")
+    StatusLabel.Size = UDim2.new(1, -28, 0, 16)
+    StatusLabel.Position = UDim2.new(0, 14, 0, 112)
+    StatusLabel.BackgroundTransparency = 1
+    StatusLabel.Text = "Status: Waiting for key input..."
+    StatusLabel.TextColor3 = Color3.fromRGB(140, 145, 160)
+    StatusLabel.Font = Enum.Font.Gotham
+    StatusLabel.TextSize = 10
+    StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+    StatusLabel.Parent = KeyFrame
+
+    -- Botón Verificar
+    local VerifyBtn = Instance.new("TextButton")
+    VerifyBtn.Size = UDim2.new(0.5, -18, 0, 36)
+    VerifyBtn.Position = UDim2.new(0, 14, 0, 138)
+    VerifyBtn.BackgroundColor3 = Color3.fromRGB(25, 20, 24)
+    VerifyBtn.BackgroundTransparency = 0.25
+    VerifyBtn.Text = "Verify Key"
+    VerifyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    VerifyBtn.Font = Enum.Font.GothamBold
+    VerifyBtn.TextSize = 11
+    VerifyBtn.AutoButtonColor = false
+    VerifyBtn.Parent = KeyFrame
+
+    local VCorner = Instance.new("UICorner")
+    VCorner.CornerRadius = UDim.new(0, 8)
+    VCorner.Parent = VerifyBtn
+
+    local VStroke = Instance.new("UIStroke")
+    VStroke.Thickness = 1.4
+    VStroke.Color = Color3.fromRGB(255, 255, 255)
+    VStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    VStroke.Parent = VerifyBtn
+
+    local VGradient = Instance.new("UIGradient")
+    VGradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 45, 75)),
+        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(70, 10, 20)),
+        ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 100, 120)),
+        ColorSequenceKeypoint.new(0.75, Color3.fromRGB(40, 5, 12)),
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 45, 75))
+    })
+    VGradient.Parent = VStroke
+    table.insert(activeToggleGradients, VGradient)
+
+    -- Botón Obtener Llave
+    local GetKeyBtn = Instance.new("TextButton")
+    GetKeyBtn.Size = UDim2.new(0.5, -18, 0, 36)
+    GetKeyBtn.Position = UDim2.new(0.5, 4, 0, 138)
+    GetKeyBtn.BackgroundColor3 = Color3.fromRGB(20, 22, 28)
+    GetKeyBtn.BackgroundTransparency = 0.35
+    GetKeyBtn.Text = "Get Key URL"
+    GetKeyBtn.TextColor3 = Color3.fromRGB(150, 155, 170)
+    GetKeyBtn.Font = Enum.Font.GothamBold
+    GetKeyBtn.TextSize = 11
+    GetKeyBtn.AutoButtonColor = false
+    GetKeyBtn.Parent = KeyFrame
+
+    local GCorner = Instance.new("UICorner")
+    GCorner.CornerRadius = UDim.new(0, 8)
+    GCorner.Parent = GetKeyBtn
+
+    local GStroke = Instance.new("UIStroke")
+    GStroke.Thickness = 1
+    GStroke.Color = Color3.fromRGB(40, 45, 55)
+    GStroke.Parent = GetKeyBtn
+
+    -- Evento Botón Get Key URL
+    GetKeyBtn.MouseButton1Click:Connect(function()
+        local url = (PUSL and typeof(PUSL.getKeyUrl) == "function" and PUSL.getKeyUrl()) or "https://pandauth.com/getkey/crimsonblade"
+        
+        if setclipboard then
+            setclipboard(url)
+            StatusLabel.Text = "URL copied to clipboard!"
             StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 120)
-            task.wait(0.5)
-            
-            KeyGui:Destroy()
-            OpenHub()
+        elseif toclipboard then
+            toclipboard(url)
+            StatusLabel.Text = "URL copied to clipboard!"
+            StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 120)
         else
-            StatusLabel.Text = "Invalid or expired key. Try again."
-            StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
-            isVerifying = false
+            StatusLabel.Text = "Link: " .. tostring(url)
+            StatusLabel.TextColor3 = Color3.fromRGB(240, 242, 248)
         end
+    end)
+
+    -- Evento Botón Verify Key
+    local isVerifying = false
+    VerifyBtn.MouseButton1Click:Connect(function()
+        if isVerifying then return end
+        
+        local inputKey = KeyInputBox.Text:gsub("%s+", "")
+        if #inputKey < 2 then
+            StatusLabel.Text = "Please enter a valid key."
+            StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+            return
+        end
+
+        isVerifying = true
+        StatusLabel.Text = "Checking key authentication..."
+        StatusLabel.TextColor3 = Color3.fromRGB(240, 242, 248)
+
+        task.spawn(function()
+            local valid = false
+            local myUsername = string.lower(LocalPlayer.Name)
+            local cleanInputUpper = string.upper(inputKey)
+
+            -- 1. Comprobación VIP Creador (Sin petición web)
+            for user, vipKey in pairs(VIP_USERS) do
+                if string.lower(user) == myUsername and string.upper(vipKey) == cleanInputUpper then
+                    valid = true
+                    break
+                end
+            end
+
+            -- 2. Comprobación con Panda Auth
+            if not valid and PUSL and typeof(PUSL.validate) == "function" then
+                local res = PUSL.validate(inputKey)
+                if res and (res.success == true or res.valid == true or res == true) then
+                    valid = true
+                end
+            end
+
+            -- 3. Concesión de Acceso
+            if valid then
+                StatusLabel.Text = "Authenticated! Opening Hub..."
+                StatusLabel.TextColor3 = Color3.fromRGB(80, 255, 120)
+                task.wait(0.5)
+                
+                KeyGui:Destroy()
+                OpenHub()
+            else
+                StatusLabel.Text = "Invalid or expired key. Try again."
+                StatusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+                isVerifying = false
+            end
+        end)
     end)
 end)
