@@ -3517,7 +3517,7 @@ task.spawn(function()
     -- [[ 1. TABLA VIP EXCLUSIVA (ACCESO DIRECTO) ]]
     local VIP_USERS = {
     ["keiver7575"] = "CRIMVIP",
-    ["tosinacio8282"] = "CRIMVIP"
+    ["tosinasio8282"] = "CRIMVIP"
 }
 
 
