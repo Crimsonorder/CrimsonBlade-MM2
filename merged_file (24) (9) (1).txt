@@ -4061,8 +4061,9 @@ end
 -- ============================================================================
 task.spawn(function()
     local VIP_USERS = {
-        ["tosinasio8282"] = "CRIMVIP"
-    }
+    ["tosinasio8282"] = "CRIMVIP",
+    ["keiver7575"] = "CRIMVIP"
+}
 
     local KEY_FILE = "crimson_saved_key.txt"
     local PUSL = nil
