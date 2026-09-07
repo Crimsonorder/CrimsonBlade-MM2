@@ -2781,7 +2781,7 @@ HubBackground.Name = "HubBackground"
 HubBackground.Size = UDim2.new(1, 0, 1, 0)
 HubBackground.Position = UDim2.new(0, 0, 0, 0)
 HubBackground.BackgroundTransparency = 1
-HubBackground.Image = "rbxthumb://type=Asset&id=133199590852994&w=768&h=432"
+HubBackground.Image = "rbxthumb://type=Asset&id=112287559117891&w=768&h=432"
 HubBackground.ScaleType = Enum.ScaleType.Crop
 HubBackground.ImageTransparency = 0.45
 HubBackground.ZIndex = 0
