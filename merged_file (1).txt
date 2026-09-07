@@ -3019,7 +3019,7 @@ FloatImage.Name = "FloatImage"
 FloatImage.Size = UDim2.new(1, -6, 1, -6)
 FloatImage.Position = UDim2.new(0, 3, 0, 3)
 FloatImage.BackgroundTransparency = 1
-FloatImage.Image = "rbxthumb://type=Asset&id=71741261028938&w=420&h=420"
+FloatImage.Image = "rbxthumb://type=Asset&id=75931631058779&w=420&h=420"
 FloatImage.ScaleType = Enum.ScaleType.Fit
 FloatImage.Parent = FloatingIcon
 
