@@ -4327,45 +4327,18 @@ Elements.AddButton(TabMM2Adv, "Teleport to Checkpoint", function()
     pcall(function()
         local char = LocalPlayer.Character
         local hrp = char and char:FindFirstChild("HumanoidRootPart")
-        if not hrp then return end
-
-        local targetPlatform = nil
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:IsA("BasePart") or obj:IsA("Model") then
-                local nameLow = string.lower(obj.Name)
-                if string.find(nameLow, "checkpoint")
-                    or string.find(nameLow, "spawnplatform")
-                    or string.find(nameLow, "preround")
-                    or string.find(nameLow, "waitingplatform")
-                    or string.find(nameLow, "lobbyplatform") then
-                    targetPlatform = obj
-                    break
-                end
+        if hrp then
+            hrp.AssemblyLinearVelocity = Vector3.zero
+            hrp.AssemblyAngularVelocity = Vector3.zero
+            hrp.CFrame = CFrame.new(14.2, 516.1, -25.4)
+            if Core.Notify then 
+                Core.Notify("Teleport", "Teletransportado al Checkpoint.", 2.5) 
             end
-        end
-
-        if not targetPlatform then
-            for _, obj in ipairs(Workspace:GetDescendants()) do
-                if obj:IsA("SpawnLocation") and (string.find(string.lower(obj.Name), "lobby") or (obj.Position - Vector3.new(-107, 152, 41)).Magnitude < 120) then
-                    targetPlatform = obj
-                    break
-                end
-            end
-        end
-
-        hrp.AssemblyLinearVelocity = Vector3.zero
-        hrp.AssemblyAngularVelocity = Vector3.zero
-
-        if targetPlatform then
-            local platCF = (targetPlatform:IsA("Model") and (targetPlatform.PrimaryPart and targetPlatform.PrimaryPart.CFrame or targetPlatform:GetPivot())) or targetPlatform.CFrame
-            hrp.CFrame = platCF + Vector3.new(0, 4.0, 0)
-            if Core.Notify then Core.Notify("Teleport", "Teletransportado al Checkpoint de ronda.", 2.5) end
-        else
-            hrp.CFrame = CFrame.new(-107, 155, 41)
-            if Core.Notify then Core.Notify("Teleport", "Teletransportado a la base segura del Lobby.", 2.5) end
         end
     end)
 end)
+
+
 
 Elements.AddButton(TabMM2Adv, "Teleport to Map Spawn", function()
     if Core.teleportToMapSpawn then Core.teleportToMapSpawn() end
